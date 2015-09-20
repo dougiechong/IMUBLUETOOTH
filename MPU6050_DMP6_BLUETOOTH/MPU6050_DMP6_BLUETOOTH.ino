@@ -98,7 +98,7 @@ MPU6050 mpu;
 // from the FIFO. Note this also requires gravity vector calculations.
 // Also note that yaw/pitch/roll angles suffer from gimbal lock (for
 // more info, see: http://en.wikipedia.org/wiki/Gimbal_lock)
-//#define OUTPUT_READABLE_YAWPITCHROLL
+#define OUTPUT_READABLE_YAWPITCHROLL
 
 // uncomment "OUTPUT_READABLE_REALACCEL" if you want to see acceleration
 // components with gravity removed. This acceleration reference frame is
@@ -115,7 +115,7 @@ MPU6050 mpu;
 
 // uncomment "OUTPUT_TEAPOT" if you want output that matches the
 // format used for the InvenSense teapot demo
-#define OUTPUT_TEAPOT
+//#define OUTPUT_TEAPOT
 
 SoftwareSerial Genotronex(10, 11); // RX, TX
 int ledpin=13; // led on D13 will show blink on / off
@@ -191,18 +191,18 @@ void setup() {
     // crystal solution for the UART timer.
 
     // initialize device
-    Serial.println(F("Initializing I2C devices..."));
+    Genotronex.println(F("Initializing I2C devices..."));
     mpu.initialize();
 
     // verify connection
-    Serial.println(F("Testing device connections..."));
-    Serial.println(mpu.testConnection() ? F("MPU6050 connection successful") : F("MPU6050 connection failed"));
+    Genotronex.println(F("Testing device connections..."));
+    Genotronex.println(mpu.testConnection() ? F("MPU6050 connection successful") : F("MPU6050 connection failed"));
 
     // wait for ready
-    Serial.println(F("\nSend any character to begin DMP programming and demo: "));
-    while (Serial.available() && Serial.read()); // empty buffer
-    while (!Serial.available());                 // wait for data
-    while (Serial.available() && Serial.read()); // empty buffer again
+    Genotronex.println(F("\nSend any character to begin DMP programming and demo: "));
+    while (Genotronex.available() && Genotronex.read()); // empty buffer
+    while (!Genotronex.available());                 // wait for data
+    while (Genotronex.available() && Genotronex.read()); // empty buffer again
 
     // load and configure the DMP
     Serial.println(F("Initializing DMP..."));
