@@ -199,7 +199,7 @@ void setup() {
     Genotronex.println(mpu.testConnection() ? F("MPU6050 connection successful") : F("MPU6050 connection failed"));
 
     // wait for ready
-    Genotronex.println(F("\nSend any character to begin DMP programming and demo: "));
+    Genotronex.println(F("\nPush START button to begin"));
     while (Genotronex.available() && Genotronex.read()); // empty buffer
     while (!Genotronex.available());                 // wait for data
     while (Genotronex.available() && Genotronex.read()); // empty buffer again
