@@ -45,6 +45,7 @@ THE SOFTWARE.
 // for both classes must be in the include path of your project
 #include "I2Cdev.h"
 #include <SoftwareSerial.h>// import the serial library
+#include <math.h>
 
 #include "MPU6050_6Axis_MotionApps20.h"
 //#include "MPU6050.h" // not necessary if using MotionApps include file
@@ -85,7 +86,7 @@ MPU6050 mpu;
 // uncomment "OUTPUT_READABLE_QUATERNION" if you want to see the actual
 // quaternion components in a [w, x, y, z] format (not best for parsing
 // on a remote host such as Processing or something though)
-//#define OUTPUT_READABLE_QUATERNION
+#define OUTPUT_READABLE_QUATERNION
 
 // uncomment "OUTPUT_READABLE_EULER" if you want to see Euler angles
 // (in degrees) calculated from the quaternions coming from the FIFO.
@@ -98,14 +99,14 @@ MPU6050 mpu;
 // from the FIFO. Note this also requires gravity vector calculations.
 // Also note that yaw/pitch/roll angles suffer from gimbal lock (for
 // more info, see: http://en.wikipedia.org/wiki/Gimbal_lock)
-#define OUTPUT_READABLE_YAWPITCHROLL
+//#define OUTPUT_READABLE_YAWPITCHROLL
 
 // uncomment "OUTPUT_READABLE_REALACCEL" if you want to see acceleration
 // components with gravity removed. This acceleration reference frame is
 // not compensated for orientation, so +X is always +X according to the
 // sensor, just without the effects of gravity. If you want acceleration
 // compensated for orientation, us OUTPUT_READABLE_WORLDACCEL instead.
-//#define OUTPUT_READABLE_REALACCEL
+#define OUTPUT_READABLE_REALACCEL
 
 // uncomment "OUTPUT_READABLE_WORLDACCEL" if you want to see acceleration
 // components with gravity removed and adjusted for the world frame of
@@ -148,7 +149,17 @@ float ypr[3];           // [yaw, pitch, roll]   yaw/pitch/roll container and gra
 // packet structure for InvenSense teapot demo
 uint8_t teapotPacket[14] = { '$', 0x02, 0,0, 0,0, 0,0, 0,0, 0x00, 0x00, '\r', '\n' };
 
-
+//position vectors
+float init_x;
+float init_y;
+float init_z;
+float x;
+float y;
+float z;
+double init_position;
+float curr_position;
+double displacement;
+double absement = 0;
 
 // ================================================================
 // ===               INTERRUPT DETECTION ROUTINE                ===
@@ -261,12 +272,50 @@ void loop() {
       previousMillis = currentMillis;  
        Counter+=1;
     
-      Genotronex.print("ypr\t");
+      /*Genotronex.print("ypr\t");
       Genotronex.print(ypr[0] * 180/M_PI);
       Genotronex.print("\t");
       Genotronex.print(ypr[1] * 180/M_PI);
       Genotronex.print("\t");
-      Genotronex.println(ypr[2] * 180/M_PI);
+      Genotronex.println(ypr[2] * 180/M_PI);*/
+      x = cos(ypr[0])*cos(ypr[1]);
+      y = sin(ypr[0])*cos(ypr[1]);
+      z = sin(ypr[1]);
+      if(Counter < 10){
+        init_x = cos(ypr[0])*cos(ypr[1]);
+        init_y = sin(ypr[0])*cos(ypr[1]);
+        init_z = sin(ypr[1]);
+      }
+      /*Genotronex.print("xyz\t");
+      Genotronex.print(x);
+      Genotronex.print("\t");
+      Genotronex.print(y);
+      Genotronex.print("\t");
+      Genotronex.println(z);
+      Genotronex.print("init_xyz\t");
+      Genotronex.print(init_x);
+      Genotronex.print("\t");
+      Genotronex.print(init_y);
+      Genotronex.print("\t");
+      Genotronex.println(init_z);*/
+      Genotronex.print("Displacement\t");
+      displacement = sqrt((x-init_x)*(x-init_x) + (y-init_y)*(y-init_y) + (z-init_z)*(z-init_z));
+      Genotronex.println(displacement);
+      if(displacement > 0.2){
+        absement += displacement;
+      }
+      Genotronex.print("Absement");
+      Genotronex.print("\t");
+      Genotronex.println(absement);
+      // display quaternion values in easy matrix form: w x y z
+      /*Genotronex.print("quat\t");
+      Genotronex.print(q.w);
+      Genotronex.print("\t");
+      Genotronex.print(q.x);
+      Genotronex.print("\t");
+      Genotronex.print(q.y);
+      Genotronex.print("\t");
+      Genotronex.println(q.z);*/
     
       // if the LED is off turn it on and vice-versa:
       if (ledState == LOW)
